@@ -102,9 +102,24 @@ namespace BusSystem.EditorTools
                     Bezier(first.Position, ctr, second.Position, 8));
             }
 
+            // --- Bind buildings as bus stops to their nearest node ---
+            var buildingsRoot = GameObject.Find("Buildings");
+            int stopCount = 0;
+            if (buildingsRoot != null)
+            {
+                foreach (Transform b in buildingsRoot.transform)
+                {
+                    var stop = b.GetComponent<BusStop>() ?? b.gameObject.AddComponent<BusStop>();
+                    stop.StopId = stopCount++;
+                    stop.NearestNodeIndex = graph.NearestNode(b.position);
+                    EditorUtility.SetDirty(stop);
+                }
+            }
+
             EditorUtility.SetDirty(graph);
             Debug.Log($"[RoadGraph] Built {graph.Nodes.Count} nodes, {graph.Edges.Count} edges " +
-                      $"({straights.Count} straight, {intersections.Count} intersection, {curves.Count} curve tiles).");
+                      $"({straights.Count} straight, {intersections.Count} intersection, {curves.Count} curve tiles); " +
+                      $"bound {stopCount} bus stops.");
         }
 
         static IEnumerable<Vector3> Dirs(Transform t, float half)
