@@ -6,7 +6,7 @@ the scene's road tiles; a bus follows it and explores every road, pausing at bui
 (bus stops). The route-planning layer is a swappable interface, so an agentic "brain"
 can later route the bus to specific stops without touching the graph or movement code.
 
-![Preview — the school bus driving the road network](docs/preview.png)
+![Preview — the school bus driving the road network](Docs/preview.png)
 
 ## How it works
 
