@@ -73,7 +73,11 @@ namespace BusSystem.EditorTools
                 foreach (var d in Dirs(it, halfCell))
                 {
                     Vector3 arm = it.position + d;
-                    if (!HasReliableNear(reliablePts, arm, tol, it.position)) continue;
+                    // Keep the arm only if a *different* road endpoint meets it here.
+                    // reliablePts already contains this arm point, so a connected arm
+                    // has >= 2 points at this spot (itself + the neighbour); a stub
+                    // pointing at empty ground has only itself.
+                    if (!ArmIsConnected(reliablePts, arm, tol)) continue;
                     int a = graph.AddOrMergeNode(arm);
                     AddEdge(graph, ref edgeId, center, a,
                         new List<Vector3> { graph.Nodes[center].Position, graph.Nodes[a].Position });
@@ -130,14 +134,14 @@ namespace BusSystem.EditorTools
             yield return -t.right * half;
         }
 
-        static bool HasReliableNear(List<Vector3> pts, Vector3 p, float tol, Vector3 exclude)
+        // True if at least two reliable endpoints sit at this spot: the arm itself
+        // plus a genuine neighbouring road end. A stub arm matches only itself.
+        static bool ArmIsConnected(List<Vector3> pts, Vector3 arm, float tol)
         {
             float tolSq = tol * tol;
+            int count = 0;
             foreach (var q in pts)
-            {
-                if ((q - exclude).sqrMagnitude <= tolSq) continue; // skip the intersection's own center-ish
-                if ((q - p).sqrMagnitude <= tolSq) return true;
-            }
+                if ((q - arm).sqrMagnitude <= tolSq && ++count >= 2) return true;
             return false;
         }
 
