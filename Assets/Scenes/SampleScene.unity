@@ -833,7 +833,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 351829627766334689, guid: 6fdbb43e4c22e4efb8dc230422ee57c7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2128381356}
+    - targetCorrespondingSourceObject: {fileID: 351829627766334689, guid: 6fdbb43e4c22e4efb8dc230422ee57c7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2128381355}
   m_SourcePrefab: {fileID: 100100000, guid: 6fdbb43e4c22e4efb8dc230422ee57c7, type: 3}
 --- !u!4 &478082831 stripped
 Transform:
@@ -3349,6 +3355,40 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 51f0e34e3bf5a364fb1f0489c6056013, type: 3}
   m_PrefabInstance: {fileID: 2125544021}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2128381352 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 351829627766334689, guid: 6fdbb43e4c22e4efb8dc230422ee57c7, type: 3}
+  m_PrefabInstance: {fileID: 478082830}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2128381355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128381352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c14b47ed804575340ab0bddb6dbc468a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BusSystem.BusAgent
+  Graph: {fileID: 0}
+--- !u!114 &2128381356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128381352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38fbb0e6968b0b54295fbcafb397beb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BusSystem.BusPathFollower
+  Speed: 28
+  TurnSpeed: 220
+  StopDuration: 0.4
+  ArriveThreshold: 0.15
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
