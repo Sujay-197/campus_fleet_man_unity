@@ -21,7 +21,10 @@ namespace BusSystem
         {
             if (Target == null && AutoFindBus)
             {
-                var bus = FindObjectOfType<BusAgent>();
+                // Anchor on the follower (the component actually on the bus). The old
+                // iteration-0 BusAgent orchestrator was removed when the agent-based
+                // Simulation superseded it, so finding the bus by BusAgent no longer works.
+                var bus = FindObjectOfType<BusPathFollower>();
                 if (bus != null) Target = bus.transform;
             }
             if (Target != null)
