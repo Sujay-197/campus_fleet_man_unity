@@ -20,6 +20,7 @@ namespace BusSystem
         public int NodeA;
         public int NodeB;
         public List<Vector3> Polyline = new List<Vector3>();
+        public float Length;
 
         // Runtime-only exploration flag; not serialized.
         [NonSerialized] public bool Visited;

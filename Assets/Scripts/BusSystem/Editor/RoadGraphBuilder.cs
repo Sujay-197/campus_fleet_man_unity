@@ -161,7 +161,9 @@ namespace BusSystem.EditorTools
         static void AddEdge(RoadGraph g, ref int id, int a, int b, List<Vector3> poly)
         {
             if (a == b) return;
-            g.Edges.Add(new RoadEdge { Id = id++, NodeA = a, NodeB = b, Polyline = poly });
+            float length = 0f;
+            for (int i = 0; i + 1 < poly.Count; i++) length += Vector3.Distance(poly[i], poly[i + 1]);
+            g.Edges.Add(new RoadEdge { Id = id++, NodeA = a, NodeB = b, Polyline = poly, Length = length });
         }
 
         static List<Vector3> Bezier(Vector3 p0, Vector3 ctrl, Vector3 p1, int segs)
