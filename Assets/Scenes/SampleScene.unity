@@ -855,9 +855,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 351829627766334689, guid: 6fdbb43e4c22e4efb8dc230422ee57c7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2128381356}
-    - targetCorrespondingSourceObject: {fileID: 351829627766334689, guid: 6fdbb43e4c22e4efb8dc230422ee57c7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2128381355}
   m_SourcePrefab: {fileID: 100100000, guid: 6fdbb43e4c22e4efb8dc230422ee57c7, type: 3}
 --- !u!4 &478082831 stripped
 Transform:
@@ -2766,6 +2763,59 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9c7d61bd0770539418d3eb2dc8204173, type: 3}
   m_PrefabInstance: {fileID: 1803649395}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1900420911
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1900420913}
+  - component: {fileID: 1900420912}
+  m_Layer: 0
+  m_Name: Simulation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1900420912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900420911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ec6e8f826a68e348a8ab07f6673b72b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BusSystem.Simulation
+  Graph: {fileID: 0}
+  Follower: {fileID: 0}
+  Mode: 0
+  SimSecondsPerRealSecond: 600
+  SimDurationHours: 16
+  BusCapacity: 20
+  BaseRatePerStopPerHour: 6
+  BusCruiseUnitsPerSimSecond: 0.25
+  RandomSeed: 12345
+--- !u!4 &1900420913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900420911}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1927369410
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3367,19 +3417,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 351829627766334689, guid: 6fdbb43e4c22e4efb8dc230422ee57c7, type: 3}
   m_PrefabInstance: {fileID: 478082830}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2128381355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2128381352}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c14b47ed804575340ab0bddb6dbc468a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BusSystem.BusAgent
-  Graph: {fileID: 0}
 --- !u!114 &2128381356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3407,3 +3444,4 @@ SceneRoots:
   - {fileID: 44719161}
   - {fileID: 1770455170}
   - {fileID: 1033844846}
+  - {fileID: 1900420913}

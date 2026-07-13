@@ -19,6 +19,9 @@ namespace BusSystem
         public float SimDurationHours = 16f;
         public int BusCapacity = 20;
         public float BaseRatePerStopPerHour = 6f;
+        // Bus cruise speed in world-units per simulated second. Drives leg travel time
+        // (route length / this) deterministically, independent of render framerate.
+        public float BusCruiseUnitsPerSimSecond = 0.25f;
         public int RandomSeed = 12345;
 
         const float FixedStep = 5f; // sim-seconds per logic tick
@@ -54,7 +57,7 @@ namespace BusSystem
                 Mode == RunMode.Dynamic
                     ? (IAgent)new RouteOptimizerAgent()
                     : new FixedRouteAgent(stopNodes),
-                new Dispatch(navigator),
+                new Dispatch(navigator, BusCruiseUnitsPerSimSecond),
                 new MonitorAgent(resultsDir)
             };
         }

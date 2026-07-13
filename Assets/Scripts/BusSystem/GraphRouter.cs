@@ -87,10 +87,28 @@ namespace BusSystem
             return new RouteResult { Nodes = nodePath, Cost = dist[endNode], Waypoints = waypoints };
         }
 
+        // Cost is called heavily by InsertionPlanner (O(plan^2) trial insertions each doing
+        // O(plan) cost lookups). The graph is static within a simulation run, so memoize the
+        // shortest-path cost per ordered node pair. The cache auto-resets when a different
+        // graph instance is queried, keeping unit tests (which use throwaway graphs) correct.
+        static RoadGraph _costCacheGraph;
+        static Dictionary<long, float> _costCache;
+
         public static float Cost(RoadGraph graph, int startNode, int endNode)
         {
+            if (!ReferenceEquals(graph, _costCacheGraph))
+            {
+                _costCacheGraph = graph;
+                _costCache = new Dictionary<long, float>();
+            }
+
+            long key = ((long)startNode << 32) | (uint)endNode;
+            if (_costCache.TryGetValue(key, out float cached)) return cached;
+
             var r = FindPath(graph, startNode, endNode);
-            return r?.Cost ?? float.MaxValue;
+            float cost = r?.Cost ?? float.MaxValue;
+            _costCache[key] = cost;
+            return cost;
         }
     }
 }
