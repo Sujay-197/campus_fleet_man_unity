@@ -26,6 +26,7 @@ namespace BusSystem
 
         bool _traveling;
         int _legEndNode;
+        float _legStartTime;
         float _legArriveTime;
 
         public Dispatch(IVehicleNavigator navigator, float cruiseUnitsPerSimSecond)
@@ -49,6 +50,13 @@ namespace BusSystem
                 if (bb.Bus.Plan.Count > 0)
                     BeginLegTo(bb, bb.Bus.Plan[0].StopNode);
             }
+
+            // Drive the visual bus to exactly match this leg's sim-time progress, so it stays
+            // on the road line and never teleports (position is a pure function of sim state).
+            float frac = 1f;
+            if (_traveling && _legArriveTime > _legStartTime)
+                frac = Mathf.Clamp01((bb.SimTime - _legStartTime) / (_legArriveTime - _legStartTime));
+            _navigator.UpdateTravel(frac);
 
             bb.Metrics.SampleOccupancy(bb.Bus.OnboardRequestIds.Count);
         }
@@ -98,9 +106,10 @@ namespace BusSystem
             if (bb.Bus.OnboardRequestIds.Count == 0) bb.Metrics.EmptyTravelDistance += route.Cost;
 
             _legEndNode = targetNode;
+            _legStartTime = bb.SimTime;
             _legArriveTime = bb.SimTime + (_cruiseUnitsPerSimSecond > 0f ? route.Cost / _cruiseUnitsPerSimSecond : 0f);
             _traveling = true;
-            _navigator.SetGoalPath(route.Waypoints); // visual only
+            _navigator.SetGoalPath(route.Waypoints); // visual: positioned each tick by UpdateTravel
         }
     }
 }

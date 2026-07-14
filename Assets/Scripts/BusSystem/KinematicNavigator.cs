@@ -14,17 +14,22 @@ namespace BusSystem
         public KinematicNavigator(BusPathFollower follower)
         {
             _follower = follower;
-            _follower.ReachedEndOfRoute += () =>
-            {
-                Arrived = true;
-                ReachedGoal?.Invoke();
-            };
         }
 
         public void SetGoalPath(IReadOnlyList<Vector3> waypoints)
         {
             Arrived = false;
-            _follower.SetRoute(waypoints);
+            _follower.SetPath(waypoints);
+        }
+
+        public void UpdateTravel(float legFraction01)
+        {
+            _follower.SetProgress(legFraction01);
+            if (legFraction01 >= 1f && !Arrived)
+            {
+                Arrived = true;
+                ReachedGoal?.Invoke();
+            }
         }
     }
 }

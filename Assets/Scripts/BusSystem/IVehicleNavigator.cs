@@ -13,6 +13,8 @@ namespace BusSystem
     public interface IVehicleNavigator
     {
         void SetGoalPath(IReadOnlyList<Vector3> waypoints);
+        /// <summary>Drive the vehicle to <paramref name="legFraction01"/> of the current leg (0 = start, 1 = goal).</summary>
+        void UpdateTravel(float legFraction01);
         bool Arrived { get; }
         event Action ReachedGoal;
     }
