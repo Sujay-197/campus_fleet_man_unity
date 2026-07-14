@@ -43,6 +43,8 @@ namespace BusSystem
                 SpawnTime = bb.SimTime,
                 State = RequestState.Waiting
             });
+
+            bb.Activity.Add(ActivityFeed.Kind.Requested, originIdx, destIdx, bb.SimTime);
         }
 
         // Knuth's algorithm; fine for the small lambda values used per tick here.

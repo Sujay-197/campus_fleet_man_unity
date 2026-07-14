@@ -38,12 +38,14 @@ namespace BusSystem
             var stops = FindObjectsByType<BusStop>(FindObjectsSortMode.None)
                 .OrderBy(s => s.StopId).ToList();
             var stopNodes = stops.Select(s => s.NearestNodeIndex).ToList();
+            var stopNames = stops.Select(s => s.name).ToList(); // building names (AB1..AB4)
 
             _bb = new Blackboard
             {
                 Graph = Graph,
                 Rng = new System.Random(RandomSeed),
                 Mode = Mode,
+                StopNames = stopNames,
                 Bus = new BusState { Capacity = BusCapacity, CurrentNode = Graph.NearestNode(Follower.transform.position) }
             };
 
@@ -82,6 +84,22 @@ namespace BusSystem
             if (string.IsNullOrEmpty(_hudText)) return;
             GUI.Box(new Rect(10, 10, 220, 110), "");
             GUI.Label(new Rect(20, 15, 210, 100), _hudText);
+
+            if (_bb == null) return;
+            var feed = _bb.Activity.Current(_bb.SimTime);
+            if (feed.Count == 0) return;
+
+            const float lineH = 18f;
+            float h = 22f + feed.Count * lineH;
+            GUI.Box(new Rect(10, 130, 260, h), "");
+            GUI.Label(new Rect(20, 133, 245, lineH), "Activity");
+            // Newest first.
+            for (int i = 0; i < feed.Count; i++)
+            {
+                var e = feed[feed.Count - 1 - i];
+                GUI.Label(new Rect(20, 133 + (i + 1) * lineH, 245, lineH),
+                    ActivityFeed.Format(e, _bb.StopName));
+            }
         }
     }
 }

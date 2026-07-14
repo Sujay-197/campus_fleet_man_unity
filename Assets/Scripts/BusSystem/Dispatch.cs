@@ -76,6 +76,7 @@ namespace BusSystem
                     r.AlightTime = bb.SimTime;
                     bb.Bus.OnboardRequestIds.Remove(reqId);
                     bb.Metrics.RecordDelivery(r);
+                    bb.Activity.Add(ActivityFeed.Kind.Dropped, r.DestStop, -1, bb.SimTime);
                 }
 
                 foreach (var r in bb.WaitingAt(node).OrderBy(x => x.SpawnTime).ToList())
@@ -84,6 +85,7 @@ namespace BusSystem
                     r.State = RequestState.OnBoard;
                     r.BoardTime = bb.SimTime;
                     bb.Bus.OnboardRequestIds.Add(r.Id);
+                    bb.Activity.Add(ActivityFeed.Kind.PickedUp, r.OriginStop, -1, bb.SimTime);
                 }
 
                 while (bb.Bus.Plan.Count > 0 && bb.Bus.Plan[0].StopNode == node)
