@@ -105,6 +105,11 @@ See **[Docs/NEXT_STEPS.md](Docs/NEXT_STEPS.md)** for the prioritized backlog —
 (peaked demand, more stops), fleet coordination (multiple buses), demand forecasting, congestion-aware
 costs, and the stage-2 sensor-based autonomous navigator behind `IVehicleNavigator`.
 
+**Physical sim-to-real (separate sub-project).** A real Ackermann RC vehicle doing autonomous
+LiDAR-SLAM + Nav2 navigation between checkpoints — its own standalone system with a "request A→C"
+interface, kept out of `Assets/` under [`rc_transit/`](rc_transit/README.md). Design:
+**[Docs/specs/2026-08-16-physical-rc-transit-design.md](Docs/specs/2026-08-16-physical-rc-transit-design.md)**.
+
 ## Notes
 
 - URP is installed but intentionally inactive; the scene uses Built-in Standard shaders.
