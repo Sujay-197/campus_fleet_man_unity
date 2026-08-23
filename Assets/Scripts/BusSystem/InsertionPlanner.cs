@@ -4,8 +4,11 @@ namespace BusSystem
 {
     /// <summary>
     /// Dial-A-Ride insertion heuristic: for a new request, try inserting its pickup+dropoff
-    /// at every valid position pair in the bus's current plan and commit to the cheapest one
-    /// that respects capacity and pickup-before-dropoff.
+    /// at every valid position pair in a bus's current plan and pick the cheapest one that
+    /// respects capacity and pickup-before-dropoff.
+    ///
+    /// Split into a non-committing <see cref="Probe"/> and a <see cref="Commit"/> so the fleet
+    /// optimizer can cost *every* bus before mutating any single one (see FleetOptimizerAgent).
     ///
     /// The selection objective is <see cref="PlanScore"/> — the sum of each task's cumulative
     /// arrival cost — which is passenger-centric: it rewards serving people sooner and heavily
@@ -14,7 +17,13 @@ namespace BusSystem
     /// </summary>
     public static class InsertionPlanner
     {
-        public static bool TryInsert(RoadGraph graph, BusState bus, PassengerRequest req)
+        /// <summary>
+        /// Finds the cheapest feasible insertion without touching the bus. On success, `score` is
+        /// the <see cref="PlanScore"/> of the plan that would result, and `atI`/`atJ` are the
+        /// positions to hand to <see cref="Commit"/>.
+        /// </summary>
+        public static bool Probe(RoadGraph graph, BusState bus, PassengerRequest req,
+                                 out float score, out int atI, out int atJ)
         {
             var pickup = new PlanTask { Kind = PlanTaskKind.Pickup, RequestId = req.Id, StopNode = req.OriginNode };
             var dropoff = new PlanTask { Kind = PlanTaskKind.Dropoff, RequestId = req.Id, StopNode = req.DestNode };
@@ -35,15 +44,32 @@ namespace BusSystem
 
                     if (!IsFeasible(bus, trial)) continue;
 
-                    float score = PlanScore(graph, bus.CurrentNode, trial);
-                    if (score < bestScore) { bestScore = score; bestI = i; bestJ = j; }
+                    float s = PlanScore(graph, bus.CurrentNode, trial);
+                    if (s < bestScore) { bestScore = s; bestI = i; bestJ = j; }
                 }
             }
 
-            if (bestI < 0) return false;
+            score = bestScore;
+            atI = bestI;
+            atJ = bestJ;
+            return bestI >= 0;
+        }
 
-            bus.Plan.Insert(bestI, pickup);
-            bus.Plan.Insert(bestJ + 1, dropoff);
+        /// <summary>Applies an insertion previously found by <see cref="Probe"/>.</summary>
+        public static void Commit(BusState bus, PassengerRequest req, int atI, int atJ)
+        {
+            var pickup = new PlanTask { Kind = PlanTaskKind.Pickup, RequestId = req.Id, StopNode = req.OriginNode };
+            var dropoff = new PlanTask { Kind = PlanTaskKind.Dropoff, RequestId = req.Id, StopNode = req.DestNode };
+            bus.Plan.Insert(atI, pickup);
+            bus.Plan.Insert(atJ + 1, dropoff);
+        }
+
+        /// <summary>Probe + Commit against a single bus (the iteration-1 single-bus entry point).</summary>
+        public static bool TryInsert(RoadGraph graph, BusState bus, PassengerRequest req)
+        {
+            float score; int i, j;
+            if (!Probe(graph, bus, req, out score, out i, out j)) return false;
+            Commit(bus, req, i, j);
             return true;
         }
 
