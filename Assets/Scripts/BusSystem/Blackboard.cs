@@ -12,7 +12,7 @@ namespace BusSystem
         public System.Random Rng;
         public RoadGraph Graph;
         public List<PassengerRequest> Requests = new List<PassengerRequest>();
-        public BusState Bus = new BusState();
+        public List<BusState> Buses = new List<BusState>();
         public Metrics Metrics = new Metrics();
         public ActivityFeed Activity = new ActivityFeed();
         public RunMode Mode;

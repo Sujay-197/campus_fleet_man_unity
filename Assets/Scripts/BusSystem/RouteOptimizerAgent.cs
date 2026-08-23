@@ -22,15 +22,15 @@ namespace BusSystem
             if (bb.SimTime < _nextReplanTime) return;
             _nextReplanTime = bb.SimTime + ReplanInterval;
 
-            int planCap = 2 * bb.Bus.Capacity;
-            if (bb.Bus.Plan.Count >= planCap) return;
+            int planCap = 2 * bb.Buses[0].Capacity;
+            if (bb.Buses[0].Plan.Count >= planCap) return;
 
             foreach (var req in bb.Waiting.ToList())
             {
-                if (bb.Bus.Plan.Count >= planCap) break;
-                bool alreadyPlanned = bb.Bus.Plan.Any(t => t.RequestId == req.Id);
+                if (bb.Buses[0].Plan.Count >= planCap) break;
+                bool alreadyPlanned = bb.Buses[0].Plan.Any(t => t.RequestId == req.Id);
                 if (alreadyPlanned) continue;
-                InsertionPlanner.TryInsert(bb.Graph, bb.Bus, req);
+                InsertionPlanner.TryInsert(bb.Graph, bb.Buses[0], req);
             }
         }
     }

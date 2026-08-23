@@ -45,9 +45,15 @@ namespace BusSystem
                 Graph = Graph,
                 Rng = new System.Random(RandomSeed),
                 Mode = Mode,
-                StopNames = stopNames,
-                Bus = new BusState { Capacity = BusCapacity, CurrentNode = Graph.NearestNode(Follower.transform.position) }
+                StopNames = stopNames
             };
+
+            _bb.Buses.Add(new BusState
+            {
+                Id = 0,
+                Capacity = BusCapacity,
+                CurrentNode = Graph.NearestNode(Follower.transform.position)
+            });
 
             var navigator = new KinematicNavigator(Follower);
             string resultsDir = System.IO.Path.Combine(Application.dataPath, "..", "Results");
@@ -59,7 +65,7 @@ namespace BusSystem
                 Mode == RunMode.Dynamic
                     ? (IAgent)new RouteOptimizerAgent()
                     : new FixedRouteAgent(stopNodes),
-                new Dispatch(navigator, BusCruiseUnitsPerSimSecond),
+                new Dispatch(navigator, BusCruiseUnitsPerSimSecond, 0),
                 new MonitorAgent(resultsDir)
             };
         }

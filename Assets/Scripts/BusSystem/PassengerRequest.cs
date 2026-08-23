@@ -14,5 +14,7 @@ namespace BusSystem
         public float BoardTime = -1f;
         public float AlightTime = -1f;
         public RequestState State = RequestState.Waiting;
+        // -1 = unassigned. Set once by FleetOptimizerAgent; never reassigned (greedy one-shot).
+        public int AssignedBusId = -1;
     }
 }

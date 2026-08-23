@@ -19,10 +19,10 @@ namespace BusSystem
         public void Tick(Blackboard bb, float dt)
         {
             if (bb.Mode != RunMode.FixedRoute) return;
-            if (bb.Bus.Plan.Count > 0) return;
+            if (bb.Buses[0].Plan.Count > 0) return;
 
             foreach (var node in _stopNodesInOrder)
-                bb.Bus.Plan.Add(new PlanTask { Kind = PlanTaskKind.Visit, RequestId = -1, StopNode = node });
+                bb.Buses[0].Plan.Add(new PlanTask { Kind = PlanTaskKind.Visit, RequestId = -1, StopNode = node });
         }
     }
 }

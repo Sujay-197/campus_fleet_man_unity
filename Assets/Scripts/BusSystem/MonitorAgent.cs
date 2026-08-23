@@ -28,9 +28,11 @@ namespace BusSystem
         {
             int waiting = bb.Waiting.Count();
             int delivered = bb.Requests.Count(r => r.State == RequestState.Delivered);
+            int onboard = bb.Buses.Sum(b => b.OnboardRequestIds.Count);
+            int capacity = bb.Buses.Sum(b => b.Capacity);
             return "Mode: " + bb.Mode + "\n" +
                    "SimTime: " + (bb.SimTime / 3600f).ToString("F2") + "h\n" +
-                   "Onboard: " + bb.Bus.OnboardRequestIds.Count + "/" + bb.Bus.Capacity + "\n" +
+                   "Onboard: " + onboard + "/" + capacity + "\n" +
                    "Waiting: " + waiting + "\n" +
                    "Delivered: " + delivered;
         }
