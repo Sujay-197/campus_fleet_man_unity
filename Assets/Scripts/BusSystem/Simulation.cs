@@ -17,6 +17,10 @@ namespace BusSystem
         public RunMode Mode = RunMode.Dynamic;
         public float SimSecondsPerRealSecond = 600f;
         public float SimDurationHours = 16f;
+        [Tooltip("Number of buses in the fleet. Swept 1..N for the scaling curve.")]
+        public int BusCount = 1;
+        [Tooltip("Template with a BusPathFollower; BusCount-1 extra copies are instantiated at startup. Defaults to Follower.")]
+        public BusPathFollower BusPrefab;
         public int BusCapacity = 20;
         public float BaseRatePerStopPerHour = 6f;
         // Bus cruise speed in world-units per simulated second. Drives leg travel time
@@ -40,6 +44,10 @@ namespace BusSystem
             var stopNodes = stops.Select(s => s.NearestNodeIndex).ToList();
             var stopNames = stops.Select(s => s.name).ToList(); // building names (AB1..AB4)
 
+            if (BusPrefab == null) BusPrefab = Follower;
+            int busCount = Mathf.Max(1, BusCount);
+            if (BusCount < 1) Debug.LogWarning("[Simulation] BusCount < 1; clamped to 1.");
+
             _bb = new Blackboard
             {
                 Graph = Graph,
@@ -47,15 +55,35 @@ namespace BusSystem
                 Mode = Mode,
                 StopNames = stopNames
             };
+            _bb.Metrics.EnsureBuses(busCount);
 
-            _bb.Buses.Add(new BusState
+            // One Dispatch per bus, each driving its own visual follower through its own navigator.
+            var dispatches = new List<IAgent>();
+            for (int i = 0; i < busCount; i++)
             {
-                Id = 0,
-                Capacity = BusCapacity,
-                CurrentNode = Graph.NearestNode(Follower.transform.position)
-            });
+                // Distributed start: evenly spaced across the stop list so buses begin spread out
+                // (which is also what phase-offsets the fixed-route baseline). Identical placement
+                // in both modes, so neither is advantaged.
+                int startNode = stopNodes.Count > 0
+                    ? stopNodes[(i * stopNodes.Count) / busCount]
+                    : Graph.NearestNode(Follower.transform.position);
 
-            var navigator = new KinematicNavigator(Follower);
+                BusPathFollower follower;
+                if (i == 0)
+                {
+                    follower = Follower; // reuse the bus already in the scene
+                }
+                else
+                {
+                    follower = Instantiate(BusPrefab, BusPrefab.transform.parent);
+                    follower.name = BusPrefab.name + "_" + i;
+                }
+                follower.transform.position = Graph.Nodes[startNode].Position;
+
+                _bb.Buses.Add(new BusState { Id = i, Capacity = BusCapacity, CurrentNode = startNode });
+                dispatches.Add(new Dispatch(new KinematicNavigator(follower), BusCruiseUnitsPerSimSecond, i));
+            }
+
             string resultsDir = System.IO.Path.Combine(Application.dataPath, "..", "Results");
 
             _agents = new List<IAgent>
@@ -64,10 +92,14 @@ namespace BusSystem
                 new DemandAgent(stopNodes, BaseRatePerStopPerHour),
                 Mode == RunMode.Dynamic
                     ? (IAgent)new FleetOptimizerAgent()
-                    : new FixedRouteFleetAgent(StopTour.NearestNeighbor(Graph, stopNodes)),
-                new Dispatch(navigator, BusCruiseUnitsPerSimSecond, 0),
-                new MonitorAgent(resultsDir)
+                    : new FixedRouteFleetAgent(StopTour.NearestNeighbor(Graph, stopNodes))
             };
+            _agents.AddRange(dispatches);
+            _agents.Add(new MonitorAgent(resultsDir));
+
+            // The camera follows bus 0 explicitly - auto-find would pick an arbitrary instance.
+            var cam = FindObjectOfType<CameraFollow>();
+            if (cam != null) cam.Target = Follower.transform;
         }
 
         void Update()
