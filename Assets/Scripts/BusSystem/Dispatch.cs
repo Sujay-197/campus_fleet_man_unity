@@ -63,7 +63,7 @@ namespace BusSystem
                 frac = Mathf.Clamp01((bb.SimTime - _legStartTime) / (_legArriveTime - _legStartTime));
             _navigator.UpdateTravel(frac);
 
-            bb.Metrics.SampleOccupancy(bus.OnboardRequestIds.Count);
+            bb.Metrics.SampleOccupancy(bus.Id, bus.OnboardRequestIds.Count);
         }
 
         void ProcessArrival(Blackboard bb, BusState bus)
@@ -80,7 +80,7 @@ namespace BusSystem
                     r.State = RequestState.Delivered;
                     r.AlightTime = bb.SimTime;
                     bus.OnboardRequestIds.Remove(reqId);
-                    bb.Metrics.RecordDelivery(r);
+                    bb.Metrics.RecordDelivery(r, bus.Id);
                     bb.Activity.Add(ActivityFeed.Kind.Dropped, r.DestStop, -1, bb.SimTime);
                 }
 
@@ -111,7 +111,7 @@ namespace BusSystem
                 return;
             }
 
-            if (bus.OnboardRequestIds.Count == 0) bb.Metrics.EmptyTravelDistance += route.Cost;
+            if (bus.OnboardRequestIds.Count == 0) bb.Metrics.AddEmptyTravel(bus.Id, route.Cost);
 
             _legEndNode = targetNode;
             _legStartTime = bb.SimTime;

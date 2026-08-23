@@ -33,6 +33,7 @@ namespace BusSystem
             return "Mode: " + bb.Mode + "\n" +
                    "SimTime: " + (bb.SimTime / 3600f).ToString("F2") + "h\n" +
                    "Onboard: " + onboard + "/" + capacity + "\n" +
+                   "Buses: " + bb.Buses.Count + "\n" +
                    "Waiting: " + waiting + "\n" +
                    "Delivered: " + delivered;
         }
@@ -59,13 +60,20 @@ namespace BusSystem
             var summary = bb.Metrics.Summarize(undelivered);
             var sumLines = new List<string>
             {
-                "Delivered,Undelivered,AvgWait,P90Wait,AvgRide,AvgTotal,MeanOccupancy,EmptyTravelDistance",
+                "Delivered,Undelivered,AvgWait,P90Wait,AvgRide,AvgTotal,MeanOccupancy,EmptyTravelDistance,BusCount,DeliveredCoV",
                 summary.Delivered + "," + summary.Undelivered + "," +
                     summary.AvgWait.ToString("F2") + "," + summary.P90Wait.ToString("F2") + "," +
                     summary.AvgRide.ToString("F2") + "," + summary.AvgTotal.ToString("F2") + "," +
-                    summary.MeanOccupancy.ToString("F2") + "," + summary.EmptyTravelDistance.ToString("F2")
+                    summary.MeanOccupancy.ToString("F2") + "," + summary.EmptyTravelDistance.ToString("F2") + "," +
+                    summary.BusCount + "," + summary.DeliveredCoV.ToString("F4")
             };
             File.WriteAllLines(Path.Combine(_resultsDir, mode + "_summary.csv"), sumLines);
+
+            var busLines = new List<string> { "BusId,Delivered,MeanOccupancy,EmptyTravelDistance" };
+            foreach (var bm in bb.Metrics.PerBus())
+                busLines.Add(bm.BusId + "," + bm.Delivered + "," +
+                    bm.MeanOccupancy.ToString("F2") + "," + bm.EmptyTravelDistance.ToString("F2"));
+            File.WriteAllLines(Path.Combine(_resultsDir, mode + "_buses.csv"), busLines);
         }
     }
 }
