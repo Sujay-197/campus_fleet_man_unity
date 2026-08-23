@@ -22,6 +22,7 @@
 - Results go to `Results/` at the **project root**: `Path.Combine(Application.dataPath, "..", "Results")`.
 - **Determinism is a hard requirement.** Single seeded `Blackboard.Rng`; requests assigned in ascending `Request.Id`; ties broken by lowest `BusState.Id`; buses ticked in `Id` order; never iterate a `Dictionary` where order affects results.
 - Git: commit after each task, then `git push origin main`. Include `.meta` files for every new `.cs`. Commit with the Bash tool using `git commit -F <file>` for multi-line messages (PowerShell here-string syntax `@'...'@` fails in the Bash tool).
+- **Test-fixture gotcha:** `RoadGraph.AddOrMergeNode` merges points closer than `RoadGraphConfig.MergeTolerance` (**~11.14** = `CellSize 27.85 x 0.4`). Verification graphs must space nodes **well above that (use 50)** or the fixture silently collapses into a degenerate graph and the assertions test nothing. Assert `ids.Distinct().Count()` in fixtures.
 - Existing scene objects: `RoadGraph`, `Buildings` (children `AB1`–`AB4`, each with `BusStop`), `Vehicles/school-bus` (has `BusPathFollower`), `Simulation`, `Main Camera` (has `CameraFollow`).
 
 ---
@@ -476,10 +477,10 @@ internal class CommandScript : IRunCommand
         var go = new GameObject("t_g") { hideFlags = HideFlags.HideAndDontSave };
         var g = go.AddComponent<RoadGraph>();
         var ids = new List<int>();
-        for (int k = 0; k < 4; k++) ids.Add(g.AddOrMergeNode(new Vector3(k * 10f, 0, 0)));
+        for (int k = 0; k < 4; k++) ids.Add(g.AddOrMergeNode(new Vector3(k * 50f, 0, 0)));
         for (int k = 0; k < 3; k++)
             g.Edges.Add(new RoadEdge { Id = k, NodeA = ids[k], NodeB = ids[k + 1],
-                Polyline = new List<Vector3> { g.Nodes[ids[k]].Position, g.Nodes[ids[k + 1]].Position }, Length = 10f });
+                Polyline = new List<Vector3> { g.Nodes[ids[k]].Position, g.Nodes[ids[k + 1]].Position }, Length = 50f });
 
         var bb = new Blackboard { Graph = g, Rng = new System.Random(1), Mode = RunMode.Dynamic, SimTime = 1000f };
         bb.Buses.Add(new BusState { Id = 0, Capacity = 4, CurrentNode = ids[0] }); // far
@@ -657,10 +658,10 @@ internal class CommandScript : IRunCommand
         var go = new GameObject("t_g") { hideFlags = HideFlags.HideAndDontSave };
         var g = go.AddComponent<RoadGraph>();
         var ids = new List<int>();
-        for (int k = 0; k < 4; k++) ids.Add(g.AddOrMergeNode(new Vector3(k * 10f, 0, 0)));
+        for (int k = 0; k < 4; k++) ids.Add(g.AddOrMergeNode(new Vector3(k * 50f, 0, 0)));
         for (int k = 0; k < 3; k++)
             g.Edges.Add(new RoadEdge { Id = k, NodeA = ids[k], NodeB = ids[k + 1],
-                Polyline = new List<Vector3> { g.Nodes[ids[k]].Position, g.Nodes[ids[k + 1]].Position }, Length = 10f });
+                Polyline = new List<Vector3> { g.Nodes[ids[k]].Position, g.Nodes[ids[k + 1]].Position }, Length = 50f });
 
         // Deliberately scrambled stop order: NN from stop 0 must sort it into 0,1,2,3.
         var scrambled = new List<int> { ids[0], ids[2], ids[1], ids[3] };

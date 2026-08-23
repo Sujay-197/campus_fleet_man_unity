@@ -63,7 +63,7 @@ namespace BusSystem
                 new SimClockAgent(SimDurationHours),
                 new DemandAgent(stopNodes, BaseRatePerStopPerHour),
                 Mode == RunMode.Dynamic
-                    ? (IAgent)new RouteOptimizerAgent()
+                    ? (IAgent)new FleetOptimizerAgent()
                     : new FixedRouteAgent(stopNodes),
                 new Dispatch(navigator, BusCruiseUnitsPerSimSecond, 0),
                 new MonitorAgent(resultsDir)
