@@ -106,16 +106,24 @@ namespace BusSystem.EditorTools
                     Bezier(first.Position, ctr, second.Position, 8));
             }
 
-            // --- Bind buildings as bus stops to their nearest node ---
-            var buildingsRoot = GameObject.Find("Buildings");
+            // --- Bind buildings and standalone markers as bus stops ---
+            // Buildings first (preserving existing StopIds), then any children of a "Stops"
+            // root, so extra stops can be added without a building mesh.
             int stopCount = 0;
-            if (buildingsRoot != null)
+            var boundNodes = new Dictionary<int, string>();
+            foreach (var rootName in new[] { "Buildings", "Stops" })
             {
-                foreach (Transform b in buildingsRoot.transform)
+                var root = GameObject.Find(rootName);
+                if (root == null) continue;
+                foreach (Transform b in root.transform)
                 {
                     var stop = b.GetComponent<BusStop>() ?? b.gameObject.AddComponent<BusStop>();
                     stop.StopId = stopCount++;
                     stop.NearestNodeIndex = graph.NearestNode(b.position);
+                    if (boundNodes.ContainsKey(stop.NearestNodeIndex))
+                        Debug.LogWarning($"[RoadGraph] '{b.name}' binds node {stop.NearestNodeIndex}, already used by " +
+                                         $"'{boundNodes[stop.NearestNodeIndex]}' - duplicate stop nodes make routing degenerate.");
+                    else boundNodes[stop.NearestNodeIndex] = b.name;
                     EditorUtility.SetDirty(stop);
                 }
             }

@@ -42,7 +42,8 @@ namespace BusSystem
             var stops = FindObjectsByType<BusStop>(FindObjectsSortMode.None)
                 .OrderBy(s => s.StopId).ToList();
             var stopNodes = stops.Select(s => s.NearestNodeIndex).ToList();
-            var stopNames = stops.Select(s => s.name).ToList(); // building names (AB1..AB4)
+            var stopNames = stops.Select(s => s.name).ToList();   // building names (AB1..AB4)
+            var stopWeights = stops.Select(s => s.Weight).ToList(); // hub bias (see BusStop.Weight)
 
             if (BusPrefab == null) BusPrefab = Follower;
             int busCount = Mathf.Max(1, BusCount);
@@ -89,7 +90,7 @@ namespace BusSystem
             _agents = new List<IAgent>
             {
                 new SimClockAgent(SimDurationHours),
-                new DemandAgent(stopNodes, BaseRatePerStopPerHour),
+                new DemandAgent(stopNodes, stopWeights, BaseRatePerStopPerHour),
                 Mode == RunMode.Dynamic
                     ? (IAgent)new FleetOptimizerAgent()
                     : new FixedRouteFleetAgent(StopTour.NearestNeighbor(Graph, stopNodes))
