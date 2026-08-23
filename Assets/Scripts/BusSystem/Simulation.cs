@@ -7,7 +7,7 @@ namespace BusSystem
     /// <summary>
     /// Orchestrates one simulation run: builds the Blackboard, ticks agents in a fixed
     /// order on a fixed sim-timestep (scaled by SimSecondsPerRealSecond), and shows a
-    /// live HUD. Mode selects Dynamic (RouteOptimizerAgent) or FixedRoute (FixedRouteAgent)
+    /// live HUD. Mode selects Dynamic (FleetOptimizerAgent) or FixedRoute (FixedRouteFleetAgent)
     /// as the routing brain; Dispatch and everything else is shared between both.
     /// </summary>
     public class Simulation : MonoBehaviour
@@ -64,7 +64,7 @@ namespace BusSystem
                 new DemandAgent(stopNodes, BaseRatePerStopPerHour),
                 Mode == RunMode.Dynamic
                     ? (IAgent)new FleetOptimizerAgent()
-                    : new FixedRouteAgent(stopNodes),
+                    : new FixedRouteFleetAgent(StopTour.NearestNeighbor(Graph, stopNodes)),
                 new Dispatch(navigator, BusCruiseUnitsPerSimSecond, 0),
                 new MonitorAgent(resultsDir)
             };
