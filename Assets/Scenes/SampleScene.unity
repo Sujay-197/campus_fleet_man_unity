@@ -2983,13 +2983,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ec6e8f826a68e348a8ab07f6673b72b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BusSystem.Simulation
-  Graph: {fileID: 0}
-  Follower: {fileID: 0}
+  Graph: {fileID: 1033844845}
+  Follower: {fileID: 2128381356}
   Mode: 0
-  SimSecondsPerRealSecond: 600
+  SimSecondsPerRealSecond: 300
   SimDurationHours: 16
-  BusCount: 1
-  BusPrefab: {fileID: 0}
+  BusCount: 3
+  BusPrefab: {fileID: 2128381356}
   BusCapacity: 20
   BaseRatePerStopPerHour: 6
   BusCruiseUnitsPerSimSecond: 0.25

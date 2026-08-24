@@ -1,2 +1,2 @@
-Delivered,Undelivered,AvgWait,P90Wait,AvgRide,AvgTotal,MeanOccupancy,EmptyTravelDistance
-263,59,8667.68,15460.00,2939.70,11607.38,13.94,253.50
+Delivered,Undelivered,AvgWait,P90Wait,AvgRide,AvgTotal,MeanOccupancy,EmptyTravelDistance,BusCount,DeliveredCoV
+756,700,8931.89,20705.00,3551.04,12482.93,16.69,255.70,3,0.1291
